@@ -10,7 +10,6 @@ ORDER BY table_name;
 -- create a DB
 CREATE DATABASE database_name;
 
-
 DROP TABLE IF EXISTS table_name;
 
 -- can instead TRUNCATE a table to simply clear it but keep its structure
@@ -85,6 +84,7 @@ SELECT * FROM employee;
 SELECT * FROM process;
 
 
+
 --- *** INSERT DATA INTO YOUR TABLES *** ---
 
 INSERT INTO table_name (col_A, col_B, col_C, col_D)
@@ -121,6 +121,7 @@ INSERT INTO employee VALUES(121, 'Rosalin', 'IT', 6000);
 INSERT INTO employee VALUES(122, 'Ibrahim', 'IT', 8000);
 INSERT INTO employee VALUES(123, 'Vikram', 'IT', 8000);
 INSERT INTO employee VALUES(124, 'Dheeraj', 'IT', 11000);
+COMMIT;
 
 -- wise to subsequently run the below to save changes invoked by database transaction, which saves all transactions 
 -- to the database since the last COMMIT or ROLLBACK command
@@ -285,6 +286,11 @@ SELECT now();
 
 SELECT now()::date;
 
+SELECT (now() + INTERVAL '1 DAY') as OneDayLater;
+
+-- convert text to date format
+SELECT TO_DATE('31-01-2021', 'DD-MM-YYYY') as date_value;
+
 -- extract info from dates
 SELECT EXTRACT(DOY FROM NOW());
 
@@ -336,9 +342,11 @@ FROM orders o;
 SELECT x.created_month, x.started_month, COUNT(DISTINCT(X.order_id))
 FROM
 (SELECT o.order_id
-, o.created, EXTRACT(MONTH FROM o.created) as created_month
-, o.started, EXTRACT(MONTH FROM o.started) as started_month
-, o.started-o.created AS interal
+, o.created 
+, EXTRACT(MONTH FROM o.created) as created_month
+, o.started
+, EXTRACT(MONTH FROM o.started) as started_month
+, o.started-o.created AS interval
 FROM orders o) x
 GROUP BY x.created_month, x.started_month;
 
@@ -364,7 +372,64 @@ FROM employee
 GROUP BY dept_name;
 
 
+
 --- *** JOIN YOUR DATA *** ---
+
+-- INNER JOIN
+SELECT *
+FROM table_a A
+JOIN table_b B
+ON A.col_name = B.col_name;
+
+-- LEFT JOIN
+SELECT *
+FROM table_a A
+LEFT JOIN table_b B
+ON A.col_name = B.col_name;
+
+-- LEFT OUTER JOIN
+SELECT *
+FROM table_a A
+LEFT JOIN table_b B
+ON A.col_name = B.col_name
+WHERE B.col_name IS NULL;
+
+-- RIGHT JOIN
+SELECT *
+FROM table_a A
+RIGHT JOIN table_b B
+ON A.col_name = B.col_name;
+
+-- RIGHT OUTER JOIN
+SELECT *
+FROM table_a A
+RIGHT JOIN table_b B
+ON A.col_name = B.col_name
+WHERE A.col_name IS NULL;
+
+-- FULL OUTER JOIN
+SELECT * 
+FROM table_a A 
+FULL OUTER JOIN table_b B 
+ON A.col_name = B.col_name;
+
+SELECT * 
+FROM table_a A 
+FULL OUTER JOIN table_b B 
+ON A.key = B.key
+WHERE A.col_name IS NULL OR B.col_name IS NULL;
+
+
+--- *** CASE STATEMENTS *** ---
+
+-- Example: gender for employees
+SELECT CASE WHEN gender = 'M' THEN 'MALE'
+            WHEN gender = 'F' THEN 'FEMALE'
+      ELSE 'Other'
+      END AS gender
+FROM employee;
+
+
 
 -- UNION removes any duplicate records as it 1st performs sorting operation & eliminates dupe records across all cols
 -- before returning combined data set. UNION ALL keeps all of the records from each of the original data sets.
@@ -465,3 +530,13 @@ baby_id int references baby_names(baby_id)
 )
 
 
+-- Example: License table
+
+ CREATE TABLE licenses
+  (purchased DATE,
+   valid INT);
+ 
+-- insert an item purchased today, valid 31 days 
+INSERT INTO licenses VALUES (CURRENT_TIMESTAMP, 31);
+
+SELECT * from licenses;
