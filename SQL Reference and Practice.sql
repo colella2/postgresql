@@ -1,3 +1,10 @@
+--- **** SQL Operations Overview **** ---
+-- DDL: CREATE DROP ALTER TRUNCATE
+-- DML: INSERT UPDATE DELETE MERGE
+-- DCL: GRANT REVOTE
+-- TCL: COMMIT ROLLBACK SAVEPOINT
+-- DQL: SELECT
+
 
 --- *** START YOUR PROJECT *** ---
 
@@ -162,6 +169,13 @@ WHERE section = 'curing';
 
 
 
+--- *** COALESCE *** ---
+
+-- used when you could have a NULL value --> allows you to provide a default value
+SELECT COALESCE(email, 'email not provided') FROM person;
+
+
+
 --- *** WINDOW/ANALYTIC FUNCTIONS *** --- 
 
 -- ** ROW_NUMBER() ** --
@@ -272,7 +286,7 @@ case when e.salary > lag(salary) over(partition by dept_name order by emp_id) th
 	 when e.salary = lag(salary) over(partition by dept_name order by emp_id) then 'Same than previous employee' end as sal_range
 from employee e;
 
--- Example: imilarly using lead function to see how it is different from lag.
+-- Example: similarly using lead function to see how it is different from lag.
 select e.*,
 lag(salary) over(partition by dept_name order by emp_id) as prev_empl_sal,
 lead(salary) over(partition by dept_name order by emp_id) as next_empl_sal
@@ -339,7 +353,7 @@ SELECT o.order_id
 , (NOW() + interval '1 day') AS Onedaylater
 FROM orders o;
 
-SELECT x.created_month, x.started_month, COUNT(DISTINCT(X.order_id))
+SELECT x.created_month, x.started_month, COUNT(DISTINCT(x.order_id))
 FROM
 (SELECT o.order_id
 , o.created 
@@ -349,6 +363,37 @@ FROM
 , o.started-o.created AS interval
 FROM orders o) x
 GROUP BY x.created_month, x.started_month;
+
+-- Example: users table
+SELECT u.*, DATE_TRUNC('YEAR', CAST(u.birthdate AS DATE)) AS year_of_birth
+FROM users_data u;
+
+
+
+--- *** AGES *** ---
+SELECT username, birthdate, age(some_date, initial_date) AS age
+FROM users_data;
+
+-- may have to cast text fields as date
+SELECT username, birthdate, AGE(CAST(some_date AS DATE), CAST(initial_date AS DATE))
+FROM users_date;
+
+-- Example: users
+CREATE TABLE users_data (username TEXT, birthdate TEXT);
+
+INSERT INTO users_data (username, birthdate) VALUES ('bob', '1980-02-15');
+INSERT INTO users_data (username, birthdate) VALUES ('jane', '1985-07-22');
+INSERT INTO users_data (username, birthdate) VALUES ('pia', '1970-10-07');
+
+SELECT *, AGE(CAST('2022-03-12' AS DATE), CAST('2022-02-06' AS DATE)) AS age
+FROM users_data;
+
+-- if you are just basing date off of the current date, you just have one parameter
+SELECT *, AGE(CAST(u.birthdate AS DATE)) AS age
+FROM users_data u;
+
+SELECT u.*, EXTRACT(YEAR FROM AGE(CAST(u.birthdate AS DATE))) AS age_in_yrs
+FROM users_data u;
 
 
 
@@ -421,6 +466,9 @@ WHERE A.col_name IS NULL OR B.col_name IS NULL;
 
 
 --- *** CASE STATEMENTS *** ---
+
+-- these are SQL's IF...ELSE statements
+-- they start with CASE WHEN THEN...ELSE...END AS
 
 -- Example: gender for employees
 SELECT CASE WHEN gender = 'M' THEN 'MALE'
