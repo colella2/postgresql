@@ -401,6 +401,23 @@ FROM users_data u;
 
 SELECT * FROM table_name;
 
+-- helps check if col is primary key
+SELECT count(*), count(distinct col_name) FROM table_name;
+
+-- could have multiple cols used to create primary key
+-- the || is used to concatenate strings (as many as you'd like) but can also use CONCAT(col_1, col_2)
+SELECT count(*), count(distinct first_name || last_name) FROM table_name;
+
+-- find examples of duplicate records
+SELECT col_name, COUNT(*) as ct
+FROM patients
+GROUP BY col_name
+HAVING COUNT(*) > 1
+ORDER BY COUNT(*) DESC;
+
+-- COUNT: When you specify a col_name, NULL values are not included in COUNT()
+-- When you don't specify a col_name, then they are included (e.g., COUNT(*))
+
 -- Using Aggregate function as Window Function
 -- Without window function, SQL will reduce the no of records.
 select dept_name, max(salary) 
@@ -477,6 +494,12 @@ SELECT CASE WHEN gender = 'M' THEN 'MALE'
       END AS gender
 FROM employee;
 
+-- it can be powerful to use CASE & SUM() together
+select 
+     sum(case when col_name = 'param' and column_name_2 = 'param' then 1 else 0 end) as alias
+   , sum(case when col_name_2 = 'param' and city = 'param' then 1 else 0 end)   as alias2
+  
+from table_name
 
 
 -- UNION removes any duplicate records as it 1st performs sorting operation & eliminates dupe records across all cols
@@ -540,6 +563,11 @@ pg_ctl -D /usr/local/var/postgres stop
 
 --- *** WITH() CLAUSE *** ---
 
+-- CTE's / WITH() clause are superior to subqueries as they improve code readability
+-- some will reserver subqueries only for one-liners
+-- as a reminder, CTE stands for (Common Table Expression)
+
+
 -- this version is the best practice
 WITH average_salary (avg_sal) AS (SELECT AVG(salary) FROM employee)
 
@@ -554,6 +582,45 @@ SELECT *
 FROM employee e, average_salary av
 WHERE e.salary > av.avg_sal;
 
+
+-- Example: CTE vs. Sub-queries
+
+-- Use of CTE
+with combined_table as (
+select
+  *
+ 
+FROM patients p
+JOIN admissions a 
+  on p.patient_id = a.patient_id
+)
+
+, name_most_admissions as (
+select
+    first_name || ' ' || last_name as full_name
+  , count(*)                       as admission_ct
+  
+FROM combined_table
+)
+
+select * from name_most_admissions
+;
+
+-- Use of sub-queries :(
+select * from 
+   (select
+        first_name || ' ' || last_name as full_name
+      , count(*)                       as admission_ct
+  
+    FROM (select
+             *
+ 
+          FROM patients p
+          JOIN admissions a 
+              on p.patient_id = a.patient_id
+          ) combined_table
+    ) name_most_admissions
+;
 
 
 
