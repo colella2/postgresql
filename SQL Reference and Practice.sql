@@ -401,6 +401,11 @@ FROM users_data u;
 
 SELECT * FROM table_name;
 
+-- the WHERE TRUE below has no specific functional purpose
+-- it can be included if a style guide says to always include a specific WHERE clause
+-- adding a WHERE clause that is always true has the same effect as grabbing all rows (as in the above SELECT *)
+SELECT * FROM table_name WHERE TRUE;
+
 -- helps check if col is primary key
 SELECT count(*), count(distinct col_name) FROM table_name;
 
@@ -481,27 +486,6 @@ FULL OUTER JOIN table_b B
 ON A.key = B.key
 WHERE A.col_name IS NULL OR B.col_name IS NULL;
 
-
---- *** CASE STATEMENTS *** ---
-
--- these are SQL's IF...ELSE statements
--- they start with CASE WHEN THEN...ELSE...END AS
-
--- Example: gender for employees
-SELECT CASE WHEN gender = 'M' THEN 'MALE'
-            WHEN gender = 'F' THEN 'FEMALE'
-      ELSE 'Other'
-      END AS gender
-FROM employee;
-
--- it can be powerful to use CASE & SUM() together
-select 
-     sum(case when col_name = 'param' and column_name_2 = 'param' then 1 else 0 end) as alias
-   , sum(case when col_name_2 = 'param' and city = 'param' then 1 else 0 end)   as alias2
-  
-from table_name
-
-
 -- UNION removes any duplicate records as it 1st performs sorting operation & eliminates dupe records across all cols
 -- before returning combined data set. UNION ALL keeps all of the records from each of the original data sets.
 
@@ -548,6 +532,38 @@ SELECT emp.emp_id, emp.emp_name, emp.emp_supervisor_id, supv.emp_name as supervi
 FROM employees2 emp
 LEFT JOIN employees2 supv
 ON emp.emp_supervisor_id = supv.emp_id;
+
+
+
+--- *** CASE STATEMENTS *** ---
+
+-- these are SQL's IF...ELSE statements
+-- they start with CASE WHEN THEN...ELSE...END AS
+
+-- Example: gender for employees
+SELECT CASE WHEN gender = 'M' THEN 'MALE'
+            WHEN gender = 'F' THEN 'FEMALE'
+      ELSE 'Other'
+      END AS gender
+FROM employee;
+
+-- it can be powerful to use CASE & SUM() together
+-- adding a WHERE clause can add additional power here
+select 
+     sum(case when col_name = 'param' and column_name_2 = 'param' then 1 else 0 end) as alias
+   , sum(case when col_name_2 = 'param' and city = 'param' then 1 else 0 end)   as alias2
+from table_name
+
+
+-- CASE statements can also be run in the WHERE clause
+-- the below two statements are equal
+SELECT COUNT(*)
+FROM employee 
+WHERE dept_name = 'Admin';
+
+SELECT COUNT(*) 
+FROM employee 
+WHERE TRUE AND 1 = (CASE WHEN dept_name = 'Admin' THEN 1 ELSE 0 END);
 
 
 
