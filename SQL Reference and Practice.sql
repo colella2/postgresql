@@ -591,7 +591,7 @@ SELECT *
 FROM employee e, average_salary av
 WHERE e.salary > av.avg_sal;
 
--- second version
+-- second version (more common)
 WITH average_salary AS (SELECT AVG(salary) AS avg_sal FROM employee)
 
 SELECT * 
