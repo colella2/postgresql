@@ -438,6 +438,11 @@ SELECT dept_name, max(salary) AS max_salary
 FROM employee
 GROUP BY dept_name;
 
+-- BETWEEN clause
+SELECT date_col 
+FROM table_name 
+WHERE TRUE AND date_col between 'date1' and 'date2';
+
 
 
 --- *** JOIN YOUR DATA *** ---
@@ -582,6 +587,7 @@ pg_ctl -D /usr/local/var/postgres stop
 -- CTE's / WITH() clause are superior to subqueries as they improve code readability
 -- some will reserver subqueries only for one-liners
 -- as a reminder, CTE stands for (Common Table Expression)
+-- also, it is in fact possible to do joins within WITH() statements
 
 
 -- this version is the best practice
@@ -597,6 +603,7 @@ WITH average_salary AS (SELECT AVG(salary) AS avg_sal FROM employee)
 SELECT * 
 FROM employee e, average_salary av
 WHERE e.salary > av.avg_sal;
+
 
 
 -- Example: CTE vs. Sub-queries
