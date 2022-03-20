@@ -48,8 +48,8 @@ CREATE TABLE employee
 
 -- ** FOREIGN KEYS ** --
 
--- The table containing the foreign key is called the referencing table or child table. The parent table refers to the 
--- table to which the foreign key is related. 
+-- The table containing the foreign key is called the referencing table or child table. 
+-- The parent table refers to the table to which the foreign key is related. 
 -- A foreign key in the PostgreSQL child table is a reference to the primary key in the parent table.
 
 DROP TABLE IF EXISTS table_name CASCADE;
@@ -59,13 +59,16 @@ ALTER TABLE table_name ADD FOREIGN KEY (column_name)
 REFERENCES other_table(column_name_2) ON DELETE CASCADE;
 
 -- Example: create a FK relationship w/ employee table
-CREATE TABLE employee(emp_id SERIAL PRIMARY  KEY,
-name VARCHAR(30),
-STATUS text,
-phone_num VARCHAR(12),
-process_fk INT NOT NULL);
+CREATE TABLE employee(
+  emp_id SERIAL PRIMARY  KEY
+, name VARCHAR(30)
+, STATUS text
+, phone_num VARCHAR(12)
+, process_fk INT NOT NULL
+);
 
-CREATE TABLE process(emp_id SERIAL PRIMARY KEY, SECTION VARCHAR(20));
+CREATE TABLE process(emp_id SERIAL PRIMARY KEY
+, SECTION VARCHAR(20));
 
 ALTER TABLE employee ADD FOREIGN KEY (process_fk)
 REFERENCES process(emp_id) ON DELETE CASCADE;
@@ -389,6 +392,7 @@ SELECT *, AGE(CAST('2022-03-12' AS DATE), CAST('2022-02-06' AS DATE)) AS age
 FROM users_data;
 
 -- if you are just basing date off of the current date, you just have one parameter
+-- to clarify, this will take the date & count up until present to create the age
 SELECT *, AGE(CAST(u.birthdate AS DATE)) AS age
 FROM users_data u;
 
@@ -557,7 +561,7 @@ FROM employee;
 select 
      sum(case when col_name = 'param' and column_name_2 = 'param' then 1 else 0 end) as alias
    , sum(case when col_name_2 = 'param' and city = 'param' then 1 else 0 end)   as alias2
-from table_name
+from table_name;
 
 
 -- CASE statements can also be run in the WHERE clause
@@ -612,7 +616,6 @@ WHERE e.salary > av.avg_sal;
 with combined_table as (
 select
   *
- 
 FROM patients p
 JOIN admissions a 
   on p.patient_id = a.patient_id
@@ -626,8 +629,7 @@ select
 FROM combined_table
 )
 
-select * from name_most_admissions
-;
+select * from name_most_admissions;
 
 -- Use of sub-queries :(
 select * from 
@@ -644,6 +646,12 @@ select * from
           ) combined_table
     ) name_most_admissions
 ;
+
+
+
+--- *** OPERATORS *** ---
+
+-- || IS CONCATENATE
 
 
 
