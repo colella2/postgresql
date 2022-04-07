@@ -1,9 +1,20 @@
 --- **** SQL Operations Overview **** ---
+
 -- DDL: CREATE DROP ALTER TRUNCATE
 -- DML: INSERT UPDATE DELETE MERGE
 -- DCL: GRANT REVOTE
 -- TCL: COMMIT ROLLBACK SAVEPOINT
 -- DQL: SELECT
+
+
+-- *** ACID Compliant *** ---
+
+-- A PostgreSQL transaction is Atomic, Consistent, Isolated & Durable
+-- Atomicity guarantees the transaction completes in an all-or-nothing manner
+-- Consistency ensures the change to data written to the DB must be valid & follow pre-defined rules
+-- Isolation determines how transaction integrity is visible to other transactions
+-- Durablity ensures the transactions have been commmitted & will be stored in the database permanently
+
 
 
 --- *** START YOUR PROJECT *** ---
@@ -60,14 +71,15 @@ REFERENCES other_table(column_name_2) ON DELETE CASCADE;
 
 -- Example: create a FK relationship w/ employee table
 CREATE TABLE employee(
-  emp_id SERIAL PRIMARY  KEY
+  emp_id SERIAL PRIMARY KEY
 , name VARCHAR(30)
 , STATUS text
 , phone_num VARCHAR(12)
 , process_fk INT NOT NULL
 );
 
-CREATE TABLE process(emp_id SERIAL PRIMARY KEY
+CREATE TABLE process(
+   emp_id SERIAL PRIMARY KEY
 , SECTION VARCHAR(20));
 
 ALTER TABLE employee ADD FOREIGN KEY (process_fk)
@@ -79,13 +91,18 @@ INSERT INTO process(SECTION) VALUES ('curing');
 INSERT INTO Process(SECTION) VALUES ('technology');
 
 -- employee is the parent table
-INSERT INTO employee(name,STATUS,phone_num,process_fk)
-VALUES('joemarie','regular','0985959905','1'),
-('shakhira','probationary','093948889487','2'),
-('hyle','regular','095599093490','1'),
-('kobe','probationary','097867556451','3'),
-('nasty','regular','094458909099','2'),
-('arianne','regular','097746890988','2');
+INSERT INTO employee(
+   name
+   ,STATUS
+   ,phone_num
+   ,process_fk)
+VALUES(
+   'joemarie','regular','0985959905','1')
+   ,('shakhira','probationary','093948889487','2')
+   ,('hyle','regular','095599093490','1')
+   ,('kobe','probationary','097867556451','3')
+   ,('nasty','regular','094458909099','2')
+   ,('arianne','regular','097746890988','2');
 
 DELETE FROM process WHERE SECTION='distribution';
 
@@ -133,8 +150,11 @@ INSERT INTO employee VALUES(123, 'Vikram', 'IT', 8000);
 INSERT INTO employee VALUES(124, 'Dheeraj', 'IT', 11000);
 COMMIT;
 
--- wise to subsequently run the below to save changes invoked by database transaction, which saves all transactions 
--- to the database since the last COMMIT or ROLLBACK command
+
+-- PostgreSQL COMMIT is used to save the transation changes to the database, which the user made.
+-- The default value of a COMMIT is ON, which means it is not necessary to execute a COMMIT to save transactions; it will automatically save a transaction to the DB.
+-- On the other hand, if auto-commit is off, then need to execute.
+-- It is wise to subsequently run the below to save changes invoked by database transaction, which saves all transactions to the database since the last COMMIT or ROLLBACK command
 COMMIT;
 
 
@@ -266,8 +286,8 @@ LAST_VALUE(salary) OVER(PARTITION BY e.dept_name ORDER BY e.salary) AS highest_i
 FROM employee e;
 
 -- this custom windowing clause will allow the anlaytic function to act on all rows within the partition
-SELECT e.*, 
-LAST_VALUE(salary) OVER(PARTITION BY e.dept_name ORDER BY e.salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS highest_in_dept
+SELECT e.*
+, LAST_VALUE(salary) OVER(PARTITION BY e.dept_name ORDER BY e.salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS highest_in_dept
 FROM employee e;
 
 

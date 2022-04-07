@@ -33,7 +33,7 @@ SELECT * FROM friending ORDER BY accepted_date;
 SELECT COUNT(*) FROM friending;
 
 
-SELECT COUNT(*) FROM friending F WHERE f.accepted_date IS NULL;
+SELECT COUNT(*) FROM friending F WHERE F.accepted_date IS NULL;
 
 SELECT SUM(CASE WHEN f.accepted_date IS NULL THEN 1 ELSE 0 END)
 FROM friending f;
