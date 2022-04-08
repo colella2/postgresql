@@ -578,10 +578,10 @@ FROM employee;
 
 -- it can be powerful to use CASE & SUM() together
 -- adding a WHERE clause can add additional power here
-select 
-     sum(case when col_name = 'param' and column_name_2 = 'param' then 1 else 0 end) as alias
-   , sum(case when col_name_2 = 'param' and city = 'param' then 1 else 0 end)   as alias2
-from table_name;
+SELECT
+     sum(CASE WHEN col_name = 'param' AND column_name_2 = 'param' THEN 1 ELSE 0 END) AS alias
+   , sum(CASE WHEN col_name_2 = 'param' AND city = 'param' THEN 1 ELSE 0 END)   AS alias2
+FROM table_name;
 
 
 -- CASE statements can also be run in the WHERE clause
